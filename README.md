@@ -2,7 +2,7 @@
 A text editor based on ideas from Doug Engelbart's 1968 "Mother of All Demos".
 
 ## Installation
-Current version is not installable.
+Current version does not support installation.
 
 ## Usage
 
