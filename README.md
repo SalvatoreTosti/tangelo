@@ -1,20 +1,16 @@
 # tangelo
-
-FIXME: description
+A text editor based on ideas from Doug Engelbart's 1968 "Mother of All Demos".
 
 ## Installation
-
-Download from http://example.com/FIXME.
+Current version is not installable.
 
 ## Usage
-
-FIXME: explanation
 
     $ java -jar tangelo-0.1.0-standalone.jar [args]
 
 ## Options
 
-FIXME: listing of options this app accepts.
+Current version does not support options.
 
 ## Examples
 
@@ -24,13 +20,4 @@ FIXME: listing of options this app accepts.
 
 ...
 
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2015 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Copyright © 2015 Salvatore Tosti
