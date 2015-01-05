@@ -1,7 +1,11 @@
 (ns tangelo.core
-  (:gen-class))
+  (:gen-class)
+  (:require
+   [seesaw.core :as seesaw]
+   [tangelo.gui :as gui]))
+
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (seesaw/native!)
+  (gui/display (gui/build-content)))
