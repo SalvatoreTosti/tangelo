@@ -3,8 +3,8 @@
   (:require
       [seesaw.core :as seesaw]))
 
-(defn text-from-widget [widget]
-  (seesaw/property widget :text))
+(defn text-from-widget [widget] )
+  ;(seesaw/property widget :text))
 
 (defn print-text [text]
   (println text)) ;text))

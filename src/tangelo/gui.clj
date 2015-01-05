@@ -10,7 +10,7 @@
                         :items [(seesaw/action
                                 :name "Save"
                         ;:key "menu N"
-                                :handler (fn [e] (backend/text-from-widget text-pane)))]
+                                :handler (fn [e] (println "wowza")))];(backend/text-from-widget text-pane)))]
                                            ;(backend/get-and-print text-pane)))]
                         )]))
 
