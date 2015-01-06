@@ -10,7 +10,12 @@
                         :items [(seesaw/action
                                 :name "Save"
                         ;:key "menu N"
-                                :handler (fn [e] (println "wowza")))];(backend/text-from-widget text-pane)))]
+                                :handler (fn [e]
+                                           (let [t (seesaw/text "HI")]
+                                             (println (seesaw/text text-pane)))
+                                           ;(seesaw/text (text-pane :text))
+                                           ))]
+                                           ;(println (backend/text-from-widget text-pane))))];(backend/text-from-widget text-pane)))]
                                            ;(backend/get-and-print text-pane)))]
                         )]))
 
@@ -21,17 +26,18 @@
                      :margin 20  ;margin in pixels
                      :caret-position 0
                      )]
-        (seesaw/scrollable text-pane)))
+    text-pane))
+        ;(seesaw/scrollable text-pane)))
 
 (defn display [content]
   "General display function, based on lecture slides, builds Jframe for program."
   (let [menu-bar (build-menubar content)
-
+        scroll-content (seesaw/scrollable content)
         window (seesaw/frame
                 :title "Tangelo"
                 :on-close :exit
                 :menubar menu-bar
-                :content content
+                :content scroll-content
                 :width 425 ;850
                 :height 550)] ;1100)
     (seesaw/show! window)))
