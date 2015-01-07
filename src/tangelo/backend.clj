@@ -3,8 +3,15 @@
   (:require
       [seesaw.core :as seesaw]))
 
+(defn save-file [location text]
+  (spit location text))
+
+(defn open-file [location]
+   ;;(if (fs/exists? location) ;TODO: add
+  (slurp location))
+
 (defn text-from-widget [widget]
-  widget)
+  (seesaw/text widget))
 
 (defn print-text [text]
   (println text)) ;text))

@@ -21,4 +21,10 @@ No examples currently.
 
 ...
 
+###To-dos
+- add file 'exist' checks when reading file
+- add file 'exist' checks when writing file
+- add undo capability to text editor
+
+
 Copyright © 2015 Salvatore Tosti

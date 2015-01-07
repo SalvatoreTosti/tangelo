@@ -11,12 +11,12 @@
                                 :name "Save"
                         ;:key "menu N"
                                 :handler (fn [e]
-                                           (let [t (seesaw/text "HI")]
-                                             (println (seesaw/text text-pane)))
-                                           ;(seesaw/text (text-pane :text))
-                                           ))]
-                                           ;(println (backend/text-from-widget text-pane))))];(backend/text-from-widget text-pane)))]
-                                           ;(backend/get-and-print text-pane)))]
+                                           (backend/save-file "resources/test-doc.txt" (backend/text-from-widget text-pane))))
+                                (seesaw/action
+                                 :name "Open"
+                                 :handler (fn [e]
+                                           (seesaw/text! text-pane (backend/open-file "resources/test-doc.txt"))))
+                                 ]
                         )]))
 
 (defn build-content []
