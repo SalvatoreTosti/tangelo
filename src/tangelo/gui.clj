@@ -4,14 +4,19 @@
    [seesaw.core :as seesaw]
    [tangelo.backend :as backend]))
 
-(defn build-menubar [text-pane]
+(defn build-menubar [text-pane link-helper-atom link-db]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
                         :items [(seesaw/action
                                 :name "Save"
                         ;:key "menu N"
                                 :handler (fn [e]
-                                           (backend/save-file "resources/test-doc.txt" (backend/text-from-widget text-pane))))
+                                           (backend/save-file
+                                            {:directory "resources"
+                                             :name "test-text"
+                                             :text (backend/text-from-widget text-pane)
+                                             :links @link-db
+                                             })))
                                 (seesaw/action
                                  :name "Open"
                                  :handler (fn [e]
@@ -19,7 +24,24 @@
                                 (seesaw/action
                                  :name "Hyper start"
                                  :handler (fn [e]
-                                            (println (seesaw/selection text-pane))))
+                                            ;nil))
+                                            (swap! link-helper-atom assoc :start (seesaw/selection text-pane))))
+                                (seesaw/action
+                                 :name "Hyper end"
+                                 :handler (fn [e]
+                                            ;nil))
+                                            (swap! link-helper-atom assoc :end (seesaw/selection text-pane))))
+                                (seesaw/action
+                                 :name "Hyper add"
+                                 :handler (fn[e]
+                                            ;nil))
+                                            (swap! link-db #(backend/add-link-pair % (@link-helper-atom :start) (@link-helper-atom :end)))))
+                                (seesaw/action
+                                 :name "View hyper links"
+                                 :handler (fn [e]
+                                            (println @link-db)))
+
+
                                  ]
                         )]))
 
@@ -34,7 +56,7 @@
 
 (defn display [content]
   "General display function, based on lecture slides, builds Jframe for program."
-  (let [menu-bar (build-menubar content)
+  (let [menu-bar (build-menubar content (atom {}) (atom {}))
         scroll-content (seesaw/scrollable content)
         window (seesaw/frame
                 :title "Tangelo"
