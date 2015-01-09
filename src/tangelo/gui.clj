@@ -16,6 +16,10 @@
                                  :name "Open"
                                  :handler (fn [e]
                                            (seesaw/text! text-pane (backend/open-file "resources/test-doc.txt"))))
+                                (seesaw/action
+                                 :name "Hyper start"
+                                 :handler (fn [e]
+                                            (println (seesaw/selection text-pane))))
                                  ]
                         )]))
 
@@ -24,8 +28,7 @@
                      :multi-line? true
                      :editable? true
                      :margin 20  ;margin in pixels
-                     :caret-position 0
-                     )]
+                     :caret-position 0)]
     text-pane))
         ;(seesaw/scrollable text-pane)))
 
@@ -41,3 +44,6 @@
                 :width 425 ;850
                 :height 550)] ;1100)
     (seesaw/show! window)))
+
+(defn run []
+    (display (build-content)))

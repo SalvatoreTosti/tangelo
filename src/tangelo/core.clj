@@ -8,4 +8,4 @@
 (defn -main
   [& args]
   (seesaw/native!)
-  (gui/display (gui/build-content)))
+  (gui/run))
