@@ -38,9 +38,13 @@
 
 
 
-(defn open-file [location]
+(defn open-text-file [location]
    ;;(if (fs/exists? location) ;TODO: add file exist protections
   (slurp location))
+
+(defn open-data-file [location]
+  (->> (slurp location)
+       (read-string )))
 
 (defn text-from-widget [widget]
   (seesaw/text widget))

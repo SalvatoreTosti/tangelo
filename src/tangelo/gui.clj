@@ -20,11 +20,12 @@
                                 (seesaw/action
                                  :name "Open"
                                  :handler (fn [e]
-                                           (seesaw/text! text-pane (backend/open-file "resources/test-doc.txt"))))
+                                           (seesaw/text! text-pane (backend/open-text-file "target/test-text.txt"))
+                                           (reset! link-db (backend/open-data-file "target/test-text.lslc"))
+                                            ))
                                 (seesaw/action
                                  :name "Hyper start"
                                  :handler (fn [e]
-                                            ;nil))
                                             (swap! link-helper-atom assoc :start (seesaw/selection text-pane))))
                                 (seesaw/action
                                  :name "Hyper end"
