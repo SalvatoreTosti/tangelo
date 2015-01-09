@@ -12,7 +12,7 @@
                         ;:key "menu N"
                                 :handler (fn [e]
                                            (backend/save-file
-                                            {:directory "resources"
+                                            {:directory "target"
                                              :name "test-text"
                                              :text (backend/text-from-widget text-pane)
                                              :links @link-db
