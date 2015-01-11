@@ -5,7 +5,7 @@
    [tangelo.backend :as backend]
    [tangelo.hyperEditor :as hyper]))
 
-(defn build-menubar [text-pane link-helper-atom link-db]
+(defn build-menubar [text-pane link-helper-atom link-db editor-mode]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
                         :items [(seesaw/action
@@ -52,11 +52,25 @@
                                  :handler (fn [e]
                                             (println @link-db)))
                                 ])
+           (seesaw/menu :text "Mode"
+                        :items [(seesaw/action
+                                 :name "View mode"
+                                 :handler (fn [e]
+                                            (println (str @editor-mode))))
+                                (seesaw/action
+                                 :name "Hyper"
+                                 :handler (fn [e]
+                                            (swap! editor-mode (constantly :hyper))))
+                                (seesaw/action
+                                 :name "Text"
+                                 :handler (fn [e]
+                                            (swap! editor-mode (constantly :text))))
+                                ])
            ]))
 
 (defn build-content []
-  (let [text-pane (seesaw/text
-                     :multi-line? true
+  (let [text-pane (seesaw/styled-text
+                     ;:multi-line? true
                      :wrap-lines? true
                      :editable? true
                      :margin 20  ;margin in pixels
@@ -66,7 +80,8 @@
 
 (defn display [content]
   "General display function, based on lecture slides, builds Jframe for program."
-  (let [menu-bar (build-menubar content (atom {}) (atom {}))
+  (let [editor-mode (atom :text)
+        menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
         scroll-content (seesaw/scrollable content)
         window (seesaw/frame
                 :title "Tangelo"
