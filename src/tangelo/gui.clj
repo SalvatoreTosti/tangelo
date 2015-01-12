@@ -5,6 +5,15 @@
    [tangelo.backend :as backend]
    [tangelo.hyperEditor :as hyper]))
 
+(defmulti cycle-mode
+ (fn [atom-editor-mode] @atom-editor-mode))
+(defmethod cycle-mode :text
+  [atom-editor-mode]
+  (swap! atom-editor-mode (constantly :hyper)))
+(defmethod cycle-mode :hyper
+  [atom-editor-mode]
+  (swap! atom-editor-mode (constantly :text)))
+
 (defn build-menubar [text-pane link-helper-atom link-db editor-mode]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
@@ -65,8 +74,14 @@
                                  :name "Text"
                                  :handler (fn [e]
                                             (swap! editor-mode (constantly :text))))
+                                (seesaw/action
+                                 :name "Cycle mode"
+                                 :handler (fn [e]
+                                            (cycle-mode editor-mode)))
                                 ])
+
            ]))
+
 
 (defn build-content []
   (let [text-pane (seesaw/styled-text
