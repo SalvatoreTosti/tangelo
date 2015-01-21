@@ -75,7 +75,7 @@
                 :content scroll-content
                 :width 425 ;850
                 :height 550)] ;1100)
-    (seesaw/show! window)))
+    (seesaw/show!  window)));to enable full screen: (seesaw/toggle-full-screen! window))))
 
 (defn run []
     (display (build-content)))
