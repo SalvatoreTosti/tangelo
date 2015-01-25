@@ -79,6 +79,14 @@
                                  :handler (fn [e]
                                             (cycle-mode editor-mode)))
                                 ])
+           (seesaw/menu :text "Text"
+                        :items [(seesaw/action
+                                 :name "change font"
+                                 :handler (fn [e]
+                                            (seesaw/config! text-pane
+                                                     :font "MONOSPACED-PLAIN-12"
+                                                     ;:background "#f88"
+                                                            )))])
 
            ]))
 
