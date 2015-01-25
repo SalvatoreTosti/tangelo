@@ -1,6 +1,8 @@
 (ns tangelo.hyperEditor
   (:gen-class))
 
+(defn make-link [])
+
 (defn add-link-head [datab link-head]
   (assoc datab link-head #{}))
 

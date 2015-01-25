@@ -22,12 +22,23 @@ No examples currently.
 ...
 
 ###To-dos
-- implement modal editing
-- add support for different fonts in text editor
-- add file 'exist' checks when reading file
-- add file 'exist' checks when writing file
-- add undo capability to text editor
-- add file browser to save functionality
-- add file browser to open functionality
+- Core
+	- implement modal editing
+	- add file 'exist' checks when reading file
+	- add file browser to save functionality
+	- add file browser to open functionality
+
+- Text Editor
+	- add support for different fonts in text editor
+	- add file 'exist' checks when writing file
+	- add undo capability to text editor
+
+- Annotation Editor
+	- add annotation layer to display
+	- allow users to add annotations
+
+- Link Editor
+	- add visual indication of link 'heads' to display
+	- add visual indication of link 'tails' to display
 
 Copyright © 2015 Salvatore Tosti
