@@ -38,16 +38,26 @@
            (seesaw/menu :text "Link"
                         :items [(seesaw/action
                                  :name "Hyper start"
+                                 ;TODO: Maybe create a wrapper function for this?
                                  :handler (fn [e]
-                                            (swap! link-helper-atom assoc :start (seesaw/selection text-pane))))
+                                            (swap! link-helper-atom assoc
+                                                   :head (seesaw/selection text-pane)
+                                                   :head-text (hyper/text-from-selection
+                                                                (seesaw/text text-pane)
+                                                                (seesaw/selection text-pane)))))
                                 (seesaw/action
                                  :name "Hyper end"
                                  :handler (fn [e]
-                                            (swap! link-helper-atom assoc :end (seesaw/selection text-pane))))
+                                            (swap! link-helper-atom assoc
+                                                   :tail (seesaw/selection text-pane)
+                                                   :tail-text (hyper/text-from-selection
+                                                              (seesaw/text text-pane)
+                                                              (seesaw/selection text-pane)))))
                                 (seesaw/action
                                  :name "Hyper add"
                                  :handler (fn [e]
-                                            (swap! link-db #(hyper/add-link-pair % (@link-helper-atom :start) (@link-helper-atom :end)))))
+                                            ;(swap! link-db #(hyper/add-link-pair % (@link-helper-atom :start) (@link-helper-atom :end)))))
+                                            (swap! link-db #(hyper/insert-new-link % link-helper-atom))))
                                 (seesaw/action
                                  :name "Jump link"
                                  :handler (fn [e]
@@ -60,7 +70,15 @@
                                  :name "View hyper links"
                                  :handler (fn [e]
                                             (println @link-db)))
+                                #_(seesaw/action
+                                 :name "text test"
+                                 :handler (fn [e]
+                                            (println
+                                             (hyper/text-from-selection
+                                              (seesaw/text text-pane)
+                                              (seesaw/selection text-pane)))))
                                 ])
+
            (seesaw/menu :text "Mode"
                         :items [(seesaw/action
                                  :name "View mode"
@@ -79,6 +97,7 @@
                                  :handler (fn [e]
                                             (cycle-mode editor-mode)))
                                 ])
+
            (seesaw/menu :text "Text"
                         :items [(seesaw/action
                                  :name "change font"
