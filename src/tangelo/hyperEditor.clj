@@ -11,9 +11,12 @@
       (assoc :tails (assoc {} tail tail-text))))
 
 (defn add-link-pair [datab head tail-node]
+  ;TODO: consider renaming to 'add-link'
+  "Wrapper for inserting new links into a 'database'."
   (assoc datab head tail-node))
 
 (defn get-head-text [datab head]
+  "Returns string associated with a given 'head'."
   (-> (datab head)
       (:text)))
 
@@ -27,22 +30,14 @@
          (@link-helper-atom :head-text)
          (@link-helper-atom :tail)
          (@link-helper-atom :tail-text))
-        head (@link-helper-atom :head)
-        ]
-  (if (contains? datab head)
-    (println "already exists")
-    (assoc datab head tail-info))))
+        head (@link-helper-atom :head)]
+    (cond
+     (nil? (@link-helper-atom :tail)) datab
+     (contains? datab head) datab
+     :else (assoc datab head tail-info))))
 
 (defn text-from-selection [string [head,tail]]
   (subs string head tail))
-
-(text-from-selection "testing 4 u" [0,5])
-
-(subs "ayvyy man" (first [0,5]) (second [0,5]))
-;(build-link-node "h text" [3,4] "t text")
-
-(assoc {} [1,2] (build-link-node "h text" [3,4] "t text"))
-
 
 (defn add-link-head [datab link-head]
   (assoc datab link-head #{}))
