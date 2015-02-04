@@ -1,7 +1,7 @@
 # tangelo
 ![tangelo](resources/tangeloIcon.png?raw=true)  
 
-A text editor based on ideas from Doug Engelbart's 1968 "Mother of All Demos".
+A text editor based on ideas from Doug Engelbart's 1968 "Mother of All Demos" and literate programming.
 
 ## Installation
 Current version does not support installation.
