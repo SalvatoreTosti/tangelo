@@ -37,8 +37,6 @@
   "Returns text associated with a given 'selection'."
   (subs string head tail))
 
-
-
 #_(defn add-link-pair [datab head tail-node]
   "DEPRICATED. Wrapper for inserting new links into a 'database'."
   (assoc datab head tail-node))

@@ -3,7 +3,10 @@
   (:require
    [seesaw.core :as seesaw]
    [tangelo.backend :as backend]
-   [tangelo.hyperEditor :as hyper]))
+   [tangelo.hyperEditor :as hyper]
+   [tangelo.textEditor :as text-edit]
+   ;[seesaw.font :as font]
+   ))
 
 (defmulti cycle-mode
  (fn [atom-editor-mode] @atom-editor-mode))
@@ -51,12 +54,11 @@
                                             (swap! link-helper-atom assoc
                                                    :tail (seesaw/selection text-pane)
                                                    :tail-text (hyper/text-from-selection
-                                                              (seesaw/text text-pane)
-                                                              (seesaw/selection text-pane)))))
+                                                               (seesaw/text text-pane)
+                                                               (seesaw/selection text-pane)))))
                                 (seesaw/action
                                  :name "Hyper add"
                                  :handler (fn [e]
-                                            ;(swap! link-db #(hyper/add-link-pair % (@link-helper-atom :start) (@link-helper-atom :end)))))
                                             (swap! link-db #(hyper/insert-new-link % link-helper-atom))))
                                 (seesaw/action
                                  :name "Jump link"
@@ -102,10 +104,13 @@
                         :items [(seesaw/action
                                  :name "change font"
                                  :handler (fn [e]
-                                            (seesaw/config! text-pane
-                                                     :font "MONOSPACED-PLAIN-12"
-                                                     ;:background "#f88"
-                                                            )))])
+                                            (text-edit/customize-display-list)
+                                            ;(seesaw-font-test)
+                                            ))])
+                                            ;(seesaw/config! text-pane
+                                            ;        :font "MONOSPACED-PLAIN-12"
+                                            ;         ;:background "#f88"
+                                            ;                )))])
 
            ]))
 

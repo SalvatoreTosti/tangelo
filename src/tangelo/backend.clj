@@ -1,7 +1,8 @@
 (ns tangelo.backend
   (:gen-class)
   (:require
-      [seesaw.core :as seesaw]))
+   [seesaw.core :as seesaw]
+   [me.raynes.fs :as fs]))
 
 (defn build-full-location [directory name ext]
   (let [sep (System/getProperty "file.separator")
@@ -19,15 +20,14 @@
     (spit text-location text)
     (spit link-location links)))
 
-
-
 (defn open-text-file [location]
-   ;;(if (fs/exists? location) ;TODO: add file exist protections
-  (slurp location))
+  (if (fs/exists? location)
+    (slurp location)))
 
 (defn open-data-file [location]
-  (->> (slurp location)
-       (read-string )))
+  (if (fs/exists? location)
+    (->> (slurp location)
+         (read-string ))))
 
 (defn text-from-widget [widget]
   (seesaw/text widget))
