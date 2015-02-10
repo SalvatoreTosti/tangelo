@@ -2,6 +2,7 @@
   (:gen-class)
   (:require
    [seesaw.core :as seesaw]
+   [clojure.string :as cljstr]
    [tangelo.backend :as backend]
    [tangelo.hyperEditor :as hyper]
    [tangelo.textEditor :as text-edit]
@@ -119,24 +120,50 @@
            ]))
 
 
+(defn keypress-char [e]
+  (.getKeyChar e))
+
+(defn blank-char? [character]
+  (cljstr/blank? (str character)))
+
+(defn undo-manager [atom-undo-db current-text e]
+  (let [pressed-char (keypress-char e)]
+    (if (blank-char? pressed-char)
+      (do
+      (swap! atom-undo-db conj current-text)
+      (println @atom-undo-db))
+      )))
+
 (defn build-content []
   (let [text-pane (seesaw/styled-text
-                     ;:multi-line? true
-                     :wrap-lines? true
-                     :editable? true
-                     :margin 20  ;margin in pixels
-                     :caret-position 0)]
+                   ;:listen [:key-pressed (undo-manager (atom {}) text-pane)]
+                   ;:multi-line? true
+                   :wrap-lines? true
+                   :editable? true
+                   :margin 20  ;margin in pixels
+                   :caret-position 0)]
     text-pane))
         ;(seesaw/scrollable text-pane)))
 
 (defn display [content]
   "General display function, based on lecture slides, builds Jframe for program."
   (let [editor-mode (atom :text)
+        editor-context {:text-pane content,
+                        :link-helper-atom (atom {}),
+                        :link-db (atom {}),
+                        :editor-mode editor-mode}
+
+        undo-listener (seesaw/listen content
+                              ;#{:insert-update}(fn[e]
+                                    :key-pressed (fn [e]
+                                                 ;(println (keypress-char e))))
+                                                 ;(println (seesaw/config content :text))))
+                                                 (undo-manager
+                                                  (atom [])
+                                                  (seesaw/config content :text)
+                                                  e)))
         ;menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
-        menu-bar (build-menubar {:text-pane content,
-                                 :link-helper-atom (atom {}),
-                                 :link-db (atom {}),
-                                 :editor-mode editor-mode})
+        menu-bar (build-menubar editor-context)
 
         scroll-content (seesaw/scrollable content)
         window (seesaw/frame
