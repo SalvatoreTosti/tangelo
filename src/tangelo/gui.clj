@@ -17,7 +17,11 @@
   [atom-editor-mode]
   (swap! atom-editor-mode (constantly :text)))
 
-(defn build-menubar [text-pane link-helper-atom link-db editor-mode]
+;(defn build-menubar [text-pane link-helper-atom link-db editor-mode]
+(defn build-menubar [{text-pane :text-pane
+                      link-helper-atom :link-helper-atom
+                      link-db :link-db
+                      editor-mode :editor-mode}]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
                         :items [(seesaw/action
@@ -128,7 +132,12 @@
 (defn display [content]
   "General display function, based on lecture slides, builds Jframe for program."
   (let [editor-mode (atom :text)
-        menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
+        ;menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
+        menu-bar (build-menubar {:text-pane content,
+                                 :link-helper-atom (atom {}),
+                                 :link-db (atom {}),
+                                 :editor-mode editor-mode})
+
         scroll-content (seesaw/scrollable content)
         window (seesaw/frame
                 :title "Tangelo"
