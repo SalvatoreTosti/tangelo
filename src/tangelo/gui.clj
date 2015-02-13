@@ -127,12 +127,12 @@
   (cljstr/blank? (str character)))
 
 (defn undo-manager [atom-undo-db current-text e]
-  (let [pressed-char (keypress-char e)]
+  (let [pressed-char (keypress-char e)
+        existing-doc (reduce str @atom-undo-db)]
     (if (blank-char? pressed-char)
-      (do
-      (swap! atom-undo-db conj current-text)
-      (println @atom-undo-db))
-      )))
+      (swap! atom-undo-db conj current-text))
+    (println @atom-undo-db)
+      ))
 
 (defn build-content []
   (let [text-pane (seesaw/styled-text
@@ -151,17 +151,20 @@
         editor-context {:text-pane content,
                         :link-helper-atom (atom {}),
                         :link-db (atom {}),
-                        :editor-mode editor-mode}
+                        :editor-mode editor-mode
+                        :undo-history-text (atom ())}
 
         undo-listener (seesaw/listen content
                               ;#{:insert-update}(fn[e]
                                     :key-pressed (fn [e]
                                                  ;(println (keypress-char e))))
                                                  ;(println (seesaw/config content :text))))
-                                                 (undo-manager
-                                                  (atom [])
+                                                  (undo-manager
+                                                  (editor-context :undo-history-text)
                                                   (seesaw/config content :text)
-                                                  e)))
+                                                  e)
+                                                   ;(println (seesaw/config content :text))
+                                                   ))
         ;menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
         menu-bar (build-menubar editor-context)
 
