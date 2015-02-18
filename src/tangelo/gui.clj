@@ -22,7 +22,8 @@
 (defn build-menubar [{text-pane :text-pane
                       link-helper-atom :link-helper-atom
                       link-db :link-db
-                      editor-mode :editor-mode}]
+                      editor-mode :editor-mode
+                      undo-history-text :undo-history-text}]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
                         :items [(seesaw/action
@@ -110,6 +111,15 @@
                                  :name "change font"
                                  :handler (fn [e]
                                             (text-edit/customize-display-list)
+                                            ;(seesaw-font-test)
+                                            ))
+                                (seesaw/action
+                                 :name "undo"
+                                 :handler (fn [e]
+                                            (let [last-state (peek @undo-history-text)]
+                                              (seesaw/config! text-pane :text last-state)
+                                              (swap! undo-history-text pop)
+                                              )
                                             ;(seesaw-font-test)
                                             ))])
                                             ;(seesaw/config! text-pane
