@@ -2,6 +2,8 @@
   (:gen-class)
   (:require
    [seesaw.core :as seesaw]
+   [seesaw.chooser :as chooser]
+   [clojure.java.io :as io]
    [clojure.string :as cljstr]
    [tangelo.backend :as backend]
    [tangelo.hyperEditor :as hyper]
@@ -30,7 +32,12 @@
                                 :name "Save"
                         ;:key "menu N"
                                 :handler (fn [e]
-                                           (backend/save-file
+                                          (chooser/choose-file
+                                           :type :save
+                                           :success-fn (fn [fc file]
+                                                         (spit file  (seesaw/config text-pane :text))))
+
+                                           #_(backend/save-file
                                             {:directory "target"
                                              :name "test-text"
                                              :text (backend/text-from-widget text-pane)
@@ -39,8 +46,9 @@
                                 (seesaw/action
                                  :name "Open"
                                  :handler (fn [e]
-                                           (seesaw/text! text-pane (backend/open-text-file "target/test-text.txt"))
-                                           (reset! link-db (backend/open-data-file "target/test-text.lslc"))
+                                            (seesaw/text! text-pane (chooser/choose-file :type :open))
+                                            ;(seesaw/text! text-pane (backend/open-text-file "target/test-text.txt"))
+                                            ;(reset! link-db (backend/open-data-file "target/test-text.lslc"))
                                             ))
                                 ])
 
@@ -110,22 +118,14 @@
                         :items [(seesaw/action
                                  :name "change font"
                                  :handler (fn [e]
-                                            (text-edit/customize-display-list)
-                                            ;(seesaw-font-test)
-                                            ))
+                                            (text-edit/customize-display-list)))
                                 (seesaw/action
                                  :name "undo"
                                  :handler (fn [e]
                                             (let [last-state (peek @undo-history-text)]
                                               (seesaw/config! text-pane :text last-state)
-                                              (swap! undo-history-text pop)
-                                              )
-                                            ;(seesaw-font-test)
-                                            ))])
-                                            ;(seesaw/config! text-pane
-                                            ;        :font "MONOSPACED-PLAIN-12"
-                                            ;         ;:background "#f88"
-                                            ;                )))])
+                                              (swap! undo-history-text pop))))
+                                ])
 
            ]))
 
