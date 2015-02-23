@@ -2,6 +2,7 @@
   (:gen-class)
   (:require
    [seesaw.core :as seesaw]
+   [seesaw.chooser :as chooser]
    [me.raynes.fs :as fs]))
 
 (defn build-full-location [directory name ext]
@@ -9,7 +10,8 @@
         path (str directory sep name ext)]
     path))
 
-(defn save-file [{
+;old save file method, does not implement seesaw's built in libraries
+#_(defn save-file [{
                   directory :directory
                   name :name
                   text :text
@@ -19,6 +21,17 @@
        link-location (build-full-location directory name ".lslc")]
     (spit text-location text)
     (spit link-location links)))
+
+(defn save-file [text-pane]
+  (chooser/choose-file
+   :type :save
+   :success-fn (fn [fc file]
+                 (spit file  (seesaw/config text-pane :text)))))
+
+
+(defn open-file [text-pane]
+   (seesaw/text! text-pane (chooser/choose-file :type :open)))
+
 
 (defn open-text-file [location]
   (if (fs/exists? location)

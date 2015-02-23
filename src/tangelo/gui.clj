@@ -32,22 +32,12 @@
                                 :name "Save"
                         ;:key "menu N"
                                 :handler (fn [e]
-                                          (chooser/choose-file
-                                           :type :save
-                                           :success-fn (fn [fc file]
-                                                         (spit file  (seesaw/config text-pane :text))))
+                                           (backend/save-file text-pane)))
 
-                                           #_(backend/save-file
-                                            {:directory "target"
-                                             :name "test-text"
-                                             :text (backend/text-from-widget text-pane)
-                                             :links @link-db
-                                             })))
                                 (seesaw/action
                                  :name "Open"
                                  :handler (fn [e]
-                                            (seesaw/text! text-pane (chooser/choose-file :type :open))
-                                            ;(seesaw/text! text-pane (backend/open-text-file "target/test-text.txt"))
+                                            (backend/open-file text-pane)
                                             ;(reset! link-db (backend/open-data-file "target/test-text.lslc"))
                                             ))
                                 ])
