@@ -3,6 +3,7 @@
   (:require
    [seesaw.core :as seesaw]
    [seesaw.chooser :as chooser]
+   [clojure.string :as cljstr]
    [me.raynes.fs :as fs]))
 
 (defn build-full-location [directory name ext]
@@ -31,6 +32,31 @@
 
 (defn open-file [text-pane]
    (seesaw/text! text-pane (chooser/choose-file :type :open)))
+
+(defn keypress-char [e]
+  (.getKeyChar e))
+
+(defn blank-char? [character]
+  (cljstr/blank? (str character)))
+
+(defn undo-manager-text [atom-undo-db current-text e]
+  (let [pressed-char (keypress-char e)
+        existing-doc (reduce str @atom-undo-db)]
+    (if (blank-char? pressed-char)
+      (swap! atom-undo-db conj current-text))
+    (println @atom-undo-db)
+      ))
+
+(defmulti undo-manager
+ (fn [atom-editor-mode atom-undo-db current-text e] @atom-editor-mode))
+(defmethod undo-manager :text
+  [atom-editor-mode atom-undo-db current-text e]
+  (undo-manager-text atom-undo-db current-text e))
+  ;(swap! atom-editor-mode (constantly :hyper)))
+(defmethod undo-manager :hyper
+  [atom-editor-mode]
+  nil)
+  ;(swap! atom-editor-mode (constantly :text)))
 
 
 (defn open-text-file [location]
