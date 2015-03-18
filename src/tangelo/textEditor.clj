@@ -11,14 +11,21 @@
 
 
 ;;Maybe have a menu with a button here, which saves current status
-(defn customize-display-list []
-  (let [font-list (font/font-families)
+(defn customize-display-list [text-pane display-information-atom]
+  "Creates popup listing fonts available on system"
+  (let [fonts (font/font-families)
+        font-list (seesaw/listbox
+                   :model fonts)
         window (seesaw/frame
                :title "Display Options"
-               ;:on-close :exit
-               ;:menubar menu-bar
-               :content (seesaw/scrollable (seesaw/listbox :model font-list))
-               :width 225 ;850
+               :content (seesaw/scrollable font-list)
+               :width 225
                :height 275)]
+    (seesaw/listen font-list
+                   :mouse-clicked (fn [e]
+                                    (->> (swap! display-information-atom
+                                           :font (seesaw/selection font-list))
+                                         (seesaw/config! text-pane :font))
+                                    ))
     (seesaw/show! window)
     ))

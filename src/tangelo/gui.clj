@@ -25,7 +25,8 @@
                       link-helper-atom :link-helper-atom
                       link-db :link-db
                       editor-mode :editor-mode
-                      undo-history-text :undo-history-text}]
+                      undo-history-text :undo-history-text
+                      display-information-atom :display-information-atom}]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
                         :items [(seesaw/action
@@ -108,7 +109,17 @@
                         :items [(seesaw/action
                                  :name "change font"
                                  :handler (fn [e]
-                                            (text-edit/customize-display-list)))
+                                            (text-edit/customize-display-list text-pane display-information-atom)
+                                            ;(seesaw/listen :item-state-changed display-information-atom
+                                            ;               (fn [e]
+                                            ;                 (seesaw/config! text-pane :font (@display-information-atom :font))))
+                                            (let [font (:font @display-information-atom)]
+                                              )
+                                              ;(println font))
+                                            ;(println (:font @display-information-atom))
+                                            ;(seesaw/config! text-pane
+                                            ;              :font (@display-information-atom :font))
+                                            ))
                                 (seesaw/action
                                  :name "undo"
                                  :handler (fn [e]
@@ -152,7 +163,8 @@
                         :link-helper-atom (atom {}),
                         :link-db (atom {}),
                         :editor-mode editor-mode
-                        :undo-history-text (atom ())}
+                        :undo-history-text (atom ())
+                        :display-information-atom (atom {:font "Baskerville"})}
 
         undo-listener (seesaw/listen content
                               ;#{:insert-update}(fn[e]
