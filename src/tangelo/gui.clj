@@ -54,8 +54,10 @@
                                             (let [tail (first (@link-db (seesaw/selection text-pane)))
                                                   begin (first tail)
                                                   end (last tail)]
+                                              (if tail (do
                                               (seesaw/config! text-pane :caret-position begin)
-                                              (seesaw/selection! text-pane tail))))
+                                              (seesaw/selection! text-pane tail)))
+                                              nil)))
                                 (seesaw/action
                                  :name "View hyper links"
                                  :handler (fn [e]
