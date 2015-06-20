@@ -73,8 +73,10 @@
                                             (let [tail (first (@link-db (seesaw/selection text-pane)))
                                                   begin (first tail)
                                                   end (last tail)]
+                                              (if tail (do
                                               (seesaw/config! text-pane :caret-position begin)
-                                              (seesaw/selection! text-pane tail))))
+                                              (seesaw/selection! text-pane tail)))
+                                              nil)))
                                 (seesaw/action
                                  :name "View hyper links"
                                  :handler (fn [e]
@@ -115,8 +117,8 @@
                                             ;(seesaw/listen :item-state-changed display-information-atom
                                             ;               (fn [e]
                                             ;                 (seesaw/config! text-pane :font (@display-information-atom :font))))
-                                            (let [font (:font @display-information-atom)]
-                                              )
+                                            ;(let [font (:font @display-information-atom)]
+                                            ;  )
                                               ;(println font))
                                             ;(println (:font @display-information-atom))
                                             ;(seesaw/config! text-pane
@@ -126,8 +128,10 @@
                                  :name "undo"
                                  :handler (fn [e]
                                             (let [last-state (peek @undo-history-text)]
-                                              (seesaw/config! text-pane :text last-state)
-                                              (swap! undo-history-text pop))))
+                                              (if last-state (do
+                                                (seesaw/config! text-pane :text last-state)
+                                                (swap! undo-history-text pop))
+                                              (seesaw/config! text-pane :text last-state)))))
 
                                  (seesaw/action
                                  :name "line numbers"
@@ -158,7 +162,6 @@
                                  :handler (fn [e]
 
                                             ))
-
                                 ])
 
            ]))
