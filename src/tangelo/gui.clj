@@ -2,8 +2,14 @@
   (:gen-class)
   (:require
    [seesaw.core :as seesaw]
+   [seesaw.chooser :as chooser]
+   [clojure.java.io :as io]
+   [clojure.string :as cljstr]
    [tangelo.backend :as backend]
-   [tangelo.hyperEditor :as hyper]))
+   [tangelo.hyperEditor :as hyper]
+   [tangelo.textEditor :as text-edit]
+   ;[seesaw.font :as font]
+   ))
 
 (defmulti cycle-mode
  (fn [atom-editor-mode] @atom-editor-mode))
@@ -14,40 +20,51 @@
   [atom-editor-mode]
   (swap! atom-editor-mode (constantly :text)))
 
-(defn build-menubar [text-pane link-helper-atom link-db editor-mode]
+;(defn build-menubar [text-pane link-helper-atom link-db editor-mode]
+(defn build-menubar [{text-pane :text-pane
+                      link-helper-atom :link-helper-atom
+                      link-db :link-db
+                      editor-mode :editor-mode
+                      undo-history-text :undo-history-text
+                      display-information-atom :display-information-atom}]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
                         :items [(seesaw/action
                                 :name "Save"
                         ;:key "menu N"
                                 :handler (fn [e]
-                                           (backend/save-file
-                                            {:directory "target"
-                                             :name "test-text"
-                                             :text (backend/text-from-widget text-pane)
-                                             :links @link-db
-                                             })))
+                                           (backend/save-file text-pane)))
+
                                 (seesaw/action
                                  :name "Open"
                                  :handler (fn [e]
-                                           (seesaw/text! text-pane (backend/open-text-file "target/test-text.txt"))
-                                           (reset! link-db (backend/open-data-file "target/test-text.lslc"))
+                                            (backend/open-file text-pane)
+                                            ;(reset! link-db (backend/open-data-file "target/test-text.lslc"))
                                             ))
                                 ])
 
            (seesaw/menu :text "Link"
                         :items [(seesaw/action
                                  :name "Hyper start"
+                                 ;TODO: Maybe create a wrapper function for this?
                                  :handler (fn [e]
-                                            (swap! link-helper-atom assoc :start (seesaw/selection text-pane))))
+                                            (swap! link-helper-atom assoc
+                                                   :head (seesaw/selection text-pane)
+                                                   :head-text (hyper/text-from-selection
+                                                                (seesaw/text text-pane)
+                                                                (seesaw/selection text-pane)))))
                                 (seesaw/action
                                  :name "Hyper end"
                                  :handler (fn [e]
-                                            (swap! link-helper-atom assoc :end (seesaw/selection text-pane))))
+                                            (swap! link-helper-atom assoc
+                                                   :tail (seesaw/selection text-pane)
+                                                   :tail-text (hyper/text-from-selection
+                                                               (seesaw/text text-pane)
+                                                               (seesaw/selection text-pane)))))
                                 (seesaw/action
                                  :name "Hyper add"
                                  :handler (fn [e]
-                                            (swap! link-db #(hyper/add-link-pair % (@link-helper-atom :start) (@link-helper-atom :end)))))
+                                            (swap! link-db #(hyper/insert-new-link % link-helper-atom))))
                                 (seesaw/action
                                  :name "Jump link"
                                  :handler (fn [e]
@@ -62,7 +79,15 @@
                                  :name "View hyper links"
                                  :handler (fn [e]
                                             (println @link-db)))
+                                #_(seesaw/action
+                                 :name "text test"
+                                 :handler (fn [e]
+                                            (println
+                                             (hyper/text-from-selection
+                                              (seesaw/text text-pane)
+                                              (seesaw/selection text-pane)))))
                                 ])
+
            (seesaw/menu :text "Mode"
                         :items [(seesaw/action
                                  :name "View mode"
@@ -82,23 +107,82 @@
                                             (cycle-mode editor-mode)))
                                 ])
 
+           (seesaw/menu :text "Text"
+                        :items [(seesaw/action
+                                 :name "change font"
+                                 :handler (fn [e]
+                                            (text-edit/customize-display-list text-pane display-information-atom)
+                                            ;(seesaw/listen :item-state-changed display-information-atom
+                                            ;               (fn [e]
+                                            ;                 (seesaw/config! text-pane :font (@display-information-atom :font))))
+                                            (let [font (:font @display-information-atom)]
+                                              )
+                                              ;(println font))
+                                            ;(println (:font @display-information-atom))
+                                            ;(seesaw/config! text-pane
+                                            ;              :font (@display-information-atom :font))
+                                            ))
+                                (seesaw/action
+                                 :name "undo"
+                                 :handler (fn [e]
+                                            (let [last-state (peek @undo-history-text)]
+                                              (seesaw/config! text-pane :text last-state)
+                                              (swap! undo-history-text pop))))
+                                ])
+
            ]))
 
 
+(defn keypress-char [e]
+  (.getKeyChar e))
+
+(defn blank-char? [character]
+  (cljstr/blank? (str character)))
+
+#_(defn ager [atom-undo-db current-text e]
+  (let [pressed-char (keypress-char e)
+        existing-doc (reduce str @atom-undo-db)]
+    (if (blank-char? pressed-char)
+      (swap! atom-undo-db conj current-text))
+    (println @atom-undo-db)
+      ))
+
 (defn build-content []
   (let [text-pane (seesaw/styled-text
-                     ;:multi-line? true
-                     :wrap-lines? true
-                     :editable? true
-                     :margin 20  ;margin in pixels
-                     :caret-position 0)]
+                   ;:listen [:key-pressed (ager (atom {}) text-pane)]
+                   ;:multi-line? true
+                   :wrap-lines? true
+                   :editable? true
+                   :margin 20  ;margin in pixels
+                   :caret-position 0)]
     text-pane))
         ;(seesaw/scrollable text-pane)))
 
 (defn display [content]
   "General display function, based on lecture slides, builds Jframe for program."
   (let [editor-mode (atom :text)
-        menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
+        editor-context {:text-pane content,
+                        :link-helper-atom (atom {}),
+                        :link-db (atom {}),
+                        :editor-mode editor-mode
+                        :undo-history-text (atom ())
+                        :display-information-atom (atom {:font "Baskerville"})}
+
+        undo-listener (seesaw/listen content
+                              ;#{:insert-update}(fn[e]
+                                    :key-pressed (fn [e]
+                                                 ;(println (keypress-char e))))
+                                                 ;(println (seesaw/config content :text))))
+                                                  (backend/undo-manager
+                                                   editor-mode
+                                                   (editor-context :undo-history-text)
+                                                   (seesaw/config content :text)
+                                                   e)
+                                                   ;(println (seesaw/config content :text))
+                                                   ))
+        ;menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
+        menu-bar (build-menubar editor-context)
+
         scroll-content (seesaw/scrollable content)
         window (seesaw/frame
                 :title "Tangelo"
@@ -107,7 +191,7 @@
                 :content scroll-content
                 :width 425 ;850
                 :height 550)] ;1100)
-    (seesaw/show! window)))
+    (seesaw/show!  window)));to enable full screen: (seesaw/toggle-full-screen! window))))
 
 (defn run []
     (display (build-content)))
