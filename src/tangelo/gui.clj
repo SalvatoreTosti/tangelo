@@ -9,7 +9,8 @@
    [tangelo.hyperEditor :as hyper]
    [tangelo.textEditor :as text-edit]
    ;[seesaw.font :as font]
-   ))
+   )
+  (import java.awt.Insets))
 
 (defmulti cycle-mode
  (fn [atom-editor-mode] @atom-editor-mode))
@@ -26,7 +27,8 @@
                       link-db :link-db
                       editor-mode :editor-mode
                       undo-history-text :undo-history-text
-                      display-information-atom :display-information-atom}]
+                      display-information-atom :display-information-atom},
+                     scroll-content]
   (seesaw/menubar
    :items [(seesaw/menu :text "File"
                         :items [(seesaw/action
@@ -126,6 +128,37 @@
                                             (let [last-state (peek @undo-history-text)]
                                               (seesaw/config! text-pane :text last-state)
                                               (swap! undo-history-text pop))))
+
+                                 (seesaw/action
+                                 :name "line numbers"
+                                 :handler (fn [e]
+                                            ;(println (seesaw/config text-pane :rows))
+                                            (seesaw/config! scroll-content :row-header (seesaw/text :text  "1.\n2.\n";(get-line-numbers text-pane)
+                                                                                                    ;:wrap-lines? (seesaw/config text-pane :wrap-lines?)
+                                                                                                    :editable? false
+                                                                                                    :margin 10 ;margin in pixels
+                                                                                                    :multi-line? true))  ;make this information another textpane ["1" "2" "3"])
+
+                                            ;(seesaw/config! text-pane :margin 10)
+
+                                            (.setMargin text-pane (new Insets 20 50 50 20))
+                                            ;(seesaw/style-text! (seesaw/text :text "test") :font "Baskerville")
+                                            ))
+
+                                (seesaw/action
+                                 :name "REPL"
+                                 :handler (fn [e]
+                                            (let [window (seesaw/to-root e)
+                                                  ]
+                                            (seesaw/config! window :content (seesaw/left-right-split (seesaw/button :text "testL") (seesaw/config window :content)))
+                                            )))
+
+                                 (seesaw/action
+                                 :name "full screen"
+                                 :handler (fn [e]
+
+                                            ))
+
                                 ])
 
            ]))
@@ -151,15 +184,17 @@
                    ;:multi-line? true
                    :wrap-lines? true
                    :editable? true
-                   :margin 20  ;margin in pixels
+                   :margin 10  ;margin in pixels
                    :caret-position 0)]
     text-pane))
         ;(seesaw/scrollable text-pane)))
 
 (defn display [content]
   "General display function, based on lecture slides, builds Jframe for program."
-  (let [editor-mode (atom :text)
-        editor-context {:text-pane content,
+  (let [;core-widget (atom (seesaw/make-widget nil)),
+        editor-mode (atom :text),
+        editor-context {;:core-widget core-widget,
+                        :text-pane content,
                         :link-helper-atom (atom {}),
                         :link-db (atom {}),
                         :editor-mode editor-mode
@@ -179,9 +214,10 @@
                                                    ;(println (seesaw/config content :text))
                                                    ))
         ;menu-bar (build-menubar content (atom {}) (atom {}) editor-mode)
-        menu-bar (build-menubar editor-context)
-
         scroll-content (seesaw/scrollable content)
+        menu-bar (build-menubar editor-context, scroll-content)
+
+
         window (seesaw/frame
                 :title "Tangelo"
                 :on-close :exit
@@ -189,7 +225,9 @@
                 :content scroll-content
                 :width 425 ;850
                 :height 550)] ;1100)
-    (seesaw/show!  window)));to enable full screen: (seesaw/toggle-full-screen! window))))
+    ;(seesaw/config! window :content (seesaw/left-right-split (seesaw/button :text "testL") (seesaw/config window :content))) ;(seesaw/button :text "testR")))
+    ;(swap! core-widget (seesaw/make-widget nil))
+    (seesaw/show! window)));to enable full screen: (seesaw/toggle-full-screen! window))))
 
 (defn run []
     (display (build-content)))
